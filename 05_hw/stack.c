@@ -47,17 +47,13 @@ void pop(Stack* stack) {
 
 Node* searchByValue(Stack* stack, int value) {
     Node* current = stack->top;
-    if (current != NULL) {
+    while (current != NULL) {
         if (current->data == value) {
             return current;
         }
-        else
-            return NULL;
+    current = current->next;
     }
-    else {
-        printf("Attempting to search an empty stack\n");
-        return NULL;
-    }
+    return NULL;
 }
 
 Node* searchByIndex(Stack* stack, int index) {
