@@ -5,6 +5,11 @@
 
 Node* createNode(int data) {
     Node* newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) {
+        exit(EXIT_FAILURE);
+        printf("Cannot create a null node");
+    }
+
     newNode->data = data;
     newNode->next = NULL;
     return newNode;
@@ -17,10 +22,11 @@ void initStack(Stack* stack) {
 void destroyStack(Stack* stack) {
     Node* current = stack->top;
     while (current != NULL) {
-        Node *tmp = current;
+        Node* tmp = current;
         current = current->next;
 	    free(tmp);
     }
+    stack->top = NULL;
 }
 
 void push(Stack* stack, int data) {
@@ -30,18 +36,28 @@ void push(Stack* stack, int data) {
 }
 
 void pop(Stack* stack) {
+    if (stack->top == NULL) {
+        printf("Cannot pop an empty stack\n");
+        return;
+    }
     Node* temp = stack->top;
     stack->top = stack->top->next;
+    free(temp);
 }
 
 Node* searchByValue(Stack* stack, int value) {
     Node* current = stack->top;
-    while (current != NULL) {
+    if (current != NULL) {
         if (current->data == value) {
             return current;
         }
+        else
+            return NULL;
     }
-    return NULL;
+    else {
+        printf("Attempting to search an empty stack\n");
+        return NULL;
+    }
 }
 
 Node* searchByIndex(Stack* stack, int index) {
@@ -57,7 +73,7 @@ Node* searchByIndex(Stack* stack, int index) {
     return NULL;
 }
 
-Node* getTop(Stack* stack) {
+Node* getTop(Stack* const stack) {
     return stack->top;
 }
 
@@ -71,8 +87,7 @@ void traverseStack(Stack* stack) {
     printf("\n");
 }
 
-bool isEmpty(Stack* stack) {
-    free(stack->top);
+bool isEmpty(Stack* const stack) {
     return stack->top == NULL;
 }
 
