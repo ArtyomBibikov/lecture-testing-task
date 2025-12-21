@@ -9,5 +9,13 @@ target_link_libraries(main stack)
 add_executable(tests tests.c)
 target_link_libraries(tests stack)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage -g")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+add_executable(benchmarks benchmarks.c)
+target_link_libraries(benchmarks stack)
+
+add_compile_options(/W4 /WX /analyze)
+
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/debug")
+
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Release)
+endif()

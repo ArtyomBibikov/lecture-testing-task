@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "stack.h"
 #include <assert.h>
+#include <stdlib.h>
 
 void testPush() {
     Stack stack;
