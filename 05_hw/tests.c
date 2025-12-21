@@ -18,9 +18,9 @@ void testPop() {
     initStack(&stack);
     push(&stack, 1);
     push(&stack, 2);
-    pop(&stack);
+    pop(&stack, &val);
     assert(getTop(&stack)->data == 1);
-    pop(&stack);
+    pop(&stack, &val);
     assert(isEmpty(&stack));
     printf("testPop passed.\n");
 }
@@ -65,7 +65,7 @@ void testIsEmpty() {
     assert(isEmpty(&stack));
     push(&stack, 1);
     assert(!isEmpty(&stack));
-    pop(&stack);
+    pop(&stack, &val);
     assert(isEmpty(&stack));
     printf("testIsEmpty passed.\n");
 }

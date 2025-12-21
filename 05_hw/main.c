@@ -18,8 +18,6 @@ int main() {
         printf("Popped value: %d\n", popped_value);
     }
 
-    pop(&stack);
-
     printf("After popping an element:\n");
     traverseStack(&stack);
 
