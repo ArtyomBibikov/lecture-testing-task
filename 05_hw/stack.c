@@ -8,7 +8,7 @@ Node* createNode(int data) {
     Node* newNode = (Node*)malloc(sizeof(Node));
     if (newNode == NULL) {
         exit(EXIT_FAILURE);
-		printf("Cannot create a null node.\n")
+		printf("Cannot create a null node.\n");
         return NULL;
     }
     newNode->data = data;
@@ -46,7 +46,7 @@ bool push(Stack* stack, int data) {
 
 bool pop(Stack* stack, int* value) {
     if (!stack || !stack->top || !value) {
-		printf("Cannot pop an empty stack.\n")
+		printf("Cannot pop an empty stack.\n");
         return false;
     }
 
