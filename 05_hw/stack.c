@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "stack.h"
 
@@ -16,10 +17,13 @@ Node* createNode(int data) {
 }
 
 void initStack(Stack* stack) {
+	if (!stack) return;
     stack->top = NULL;
 }
 
 void destroyStack(Stack* stack) {
+	if (!stack) return;
+	
     Node* current = stack->top;
     while (current != NULL) {
         Node* tmp = current;
@@ -29,16 +33,18 @@ void destroyStack(Stack* stack) {
     stack->top = NULL;
 }
 
-void push(Stack* stack, int data) {
+bool push(Stack* stack, int data) {
     Node* newNode = createNode(data);
+	if (!newNode) return false
     newNode->next = stack->top;
     stack->top = newNode;
+	return true;
 }
 
-void pop(Stack* stack) {
-    if (stack->top == NULL) {
+bool pop(Stack* stack, int* value) {
+    if (!stack || !stack->top || !value) {
         printf("Cannot pop an empty stack\n");
-        return;
+        return false;
     }
     Node* temp = stack->top;
     stack->top = stack->top->next;
@@ -46,6 +52,8 @@ void pop(Stack* stack) {
 }
 
 Node* searchByValue(Stack* stack, int value) {
+	if (!stack) return NULL;
+	
     Node* current = stack->top;
     while (current != NULL) {
         if (current->data == value) {
@@ -57,6 +65,7 @@ Node* searchByValue(Stack* stack, int value) {
 }
 
 Node* searchByIndex(Stack* stack, int index) {
+	if (!stack || index < 0) return NULL;
     Node* current = stack->top;
     int count = 0;
     while (current != NULL) {
@@ -70,7 +79,7 @@ Node* searchByIndex(Stack* stack, int index) {
 }
 
 Node* getTop(Stack* const stack) {
-    return stack->top;
+    return stack ? stack->top : NULL;
 }
 
 void traverseStack(Stack* stack) {
@@ -83,7 +92,11 @@ void traverseStack(Stack* stack) {
     printf("\n");
 }
 
-bool isEmpty(Stack* const stack) {
-    return stack->top == NULL;
+bool isEmpty(Stack* stack) {
+    return !stack || stack->top == NULL;
+}
+
+int top(Stack* stack) {
+    return (stack && stack->top) ? stack->top->data : INT_MIN;
 }
 

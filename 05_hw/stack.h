@@ -20,9 +20,9 @@ void initStack(Stack* stack);
 
 void destroyStack(Stack* stack);
 
-void push(Stack* stack, int data);
+bool push(Stack* stack, int data);
 
-void pop(Stack* stack);
+bool pop(Stack* stack);
 
 Node* searchByValue(Stack* stack, int value);
 
