@@ -34,6 +34,8 @@ void traverseStack(Stack* stack);
 
 bool isEmpty(Stack* stack);
 
+int top(Stack* stack); 
+
 #ifdef __cplusplus
 }
 #endif
