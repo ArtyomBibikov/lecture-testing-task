@@ -29,7 +29,7 @@ static double timer_elapsed_us(Timer* t) {
 }
 
 void benchmark_push_single() {
-    printf("\n=== Benchmark: Single Push ===\n");
+    printf("\nBenchmark: Single Push\n");
 
     Stack s;
     initStack(&s);
@@ -44,7 +44,6 @@ void benchmark_push_single() {
 
     timer_stop(&timer);
 
-    printf("Operation: push single element\n");
     printf("Time: %.3f microseconds\n", timer_elapsed_us(&timer));
     printf("Result: %s\n", (s.top != NULL && s.top->data == 42) ? "OK" : "FAIL");
 
@@ -52,7 +51,7 @@ void benchmark_push_single() {
 }
 
 void benchmark_push_multiple(int num_elements) {
-    printf("\n=== Benchmark: Push %d elements ===\n", num_elements);
+    printf("\nBenchmark: Push %d elements\n", num_elements);
 
     Stack s;
     initStack(&s);
@@ -90,7 +89,7 @@ void benchmark_push_multiple(int num_elements) {
 }
 
 void benchmark_pop_single() {
-    printf("\n=== Benchmark: Single Pop ===\n");
+    printf("\nBenchmark: Single Pop\n");
 
     Stack s;
     initStack(&s);
@@ -117,7 +116,7 @@ void benchmark_pop_single() {
 }
 
 void benchmark_pop_multiple(int num_elements) {
-    printf("\n=== Benchmark: Pop %d elements ===\n", num_elements);
+    printf("\nBenchmark: Pop %d elements\n", num_elements);
     Stack s;
     initStack(&s);
 
@@ -158,182 +157,8 @@ void benchmark_pop_multiple(int num_elements) {
     destroyStack(&s);
 }
 
-void benchmark_push_pop_alternating(int num_operations) {
-    printf("\n=== Benchmark: Alternating Push/Pop (%d ops) ===\n", num_operations);
-
-    Stack s;
-    initStack(&s);
-
-    Timer timer;
-    timer_start(&timer);
-
-    int value;
-    int push_count = 0;
-    int pop_count = 0;
-
-    for (int i = 0; i < num_operations; i++) {
-        if (i % 2 == 0) {
-            if (push(&s, i)) {
-                push_count++;
-            }
-        }
-        else {
-            if (pop(&s, &value)) {
-                pop_count++;
-            }
-        }
-    }
-
-    timer_stop(&timer);
-
-    double total_time_ms = timer_elapsed_ms(&timer);
-    double avg_time_us = (total_time_ms * 1000.0) / num_operations;
-
-    printf("Total operations: %d\n", num_operations);
-    printf("  Push operations: %d\n", push_count);
-    printf("  Pop operations: %d\n", pop_count);
-    printf("Total time: %.3f ms\n", total_time_ms);
-    printf("Average time per operation: %.3f µs\n", avg_time_us);
-	
-    int remaining = 0;
-    while (!isEmpty(&s)) {
-        pop(&s, &value);
-        remaining++;
-    }
-    printf("Remaining elements cleared: %d\n", remaining);
-
-    destroyStack(&s);
-}
-
-void benchmark_push_pop_sequence(int sequence_size, int repetitions) {
-    printf("\n=== Benchmark: Push/Pop Sequence (size=%d, reps=%d) ===\n",
-        sequence_size, repetitions);
-
-    Stack s;
-    initStack(&s);
-
-    Timer timer;
-    timer_start(&timer);
-
-    int value;
-    int total_operations = 0;
-
-    for (int rep = 0; rep < repetitions; rep++) {
-        for (int i = 0; i < sequence_size; i++) {
-            push(&s, i + rep * sequence_size);
-            total_operations++;
-        }
-
-        for (int i = 0; i < sequence_size; i++) {
-            pop(&s, &value);
-            total_operations++;
-        }
-    }
-
-    timer_stop(&timer);
-
-    double total_time_ms = timer_elapsed_ms(&timer);
-    double avg_time_us = (total_time_ms * 1000.0) / total_operations;
-
-    printf("Sequence size: %d\n", sequence_size);
-    printf("Repetitions: %d\n", repetitions);
-    printf("Total operations: %d\n", total_operations);
-    printf("Total time: %.3f ms\n", total_time_ms);
-    printf("Average time per operation: %.3f µs\n", avg_time_us);
-    printf("Stack empty at end: %s\n", isEmpty(&s) ? "YES" : "NO");
-
-    destroyStack(&s);
-}
-
-// БЕНЧМАРКИ ДЛЯ ГРАНИЧНЫХ СЛУЧАЕВ
-
-void benchmark_empty_stack_operations() {
-    printf("\n=== Benchmark: Empty Stack Operations ===\n");
-
-    Stack s;
-    initStack(&s);
-
-    Timer timer;
-    timer_start(&timer);
-
-    int value;
-    int iterations = 1000000;
-    int failed_pops = 0;
-	
-    for (int i = 0; i < iterations; i++) {
-        if (!pop(&s, &value)) {
-            failed_pops++;
-        }
-    }
-
-    timer_stop(&timer);
-
-    double total_time_ms = timer_elapsed_ms(&timer);
-    double avg_time_us = (total_time_ms * 1000.0) / iterations;
-
-    printf("Operations: pop from empty stack\n");
-    printf("Iterations: %d\n", iterations);
-    printf("Failed pops (expected): %d\n", failed_pops);
-    printf("Total time: %.3f ms\n", total_time_ms);
-    printf("Average time per operation: %.3f µs\n", avg_time_us);
-
-    destroyStack(&s);
-}
-
-void benchmark_small_stacks() {
-    printf("\n=== Benchmark: Small Stacks ===\n");
-
-    int sizes[] = { 1, 2, 5, 10, 20, 50, 100 };
-    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
-
-    for (int i = 0; i < num_sizes; i++) {
-        int size = sizes[i];
-
-        Stack s;
-        initStack(&s);
-
-        Timer timer;
-        timer_start(&timer);
-
-        for (int j = 0; j < size; j++) {
-            push(&s, j);
-        }
-
-        int value;
-        for (int j = 0; j < size; j++) {
-            pop(&s, &value);
-        }
-
-        timer_stop(&timer);
-
-        double total_time_us = timer_elapsed_us(&timer);
-        double avg_time_us = total_time_us / (2 * size);
-
-        printf("Size: %3d elements | Total: %7.2f µs | Avg: %6.3f µs/op\n",
-            size, total_time_us, avg_time_us);
-
-        destroyStack(&s);
-    }
-}
 
 int main() {
-    printf("========================================\n");
-    printf("        STACK BENCHMARK SUITE\n");
-    printf("========================================\n");
-
-    printf("\nSystem information:\n");
-    printf("Clock ticks per second: %ld\n", CLOCKS_PER_SEC);
-    printf("sizeof(Node): %zu bytes\n", sizeof(Node));
-    printf("sizeof(Stack): %zu bytes\n", sizeof(Stack));
-    printf("\nWarming up...\n");
-    Stack warmup;
-    initStack(&warmup);
-    for (int i = 0; i < 1000; i++) {
-        push(&warmup, i);
-        int val;
-        pop(&warmup, &val);
-    }
-    destroyStack(&warmup);
     printf("\nStarting benchmarks...\n");
     benchmark_push_single();
     benchmark_pop_single();
@@ -343,14 +168,5 @@ int main() {
     benchmark_pop_multiple(MEDIUM_SIZE);
     benchmark_push_multiple(LARGE_SIZE);
     benchmark_pop_multiple(LARGE_SIZE);
-    benchmark_push_pop_alternating(SMALL_SIZE * 2);
-    benchmark_push_pop_sequence(100, 100);
-    benchmark_empty_stack_operations();
-    benchmark_small_stacks();
-
-    printf("\n========================================\n");
-    printf("        BENCHMARK COMPLETE\n");
-    printf("========================================\n");
-
     return 0;
 }
