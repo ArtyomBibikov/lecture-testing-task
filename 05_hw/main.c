@@ -6,14 +6,17 @@ int main() {
     Stack stack;
     initStack(&stack);
 
-    push(&stack, "a");
     push(&stack, 30);
-    push(&stack, "");
     push(&stack, 100);
     push(&stack, 20);
 
     printf("After pushing elements:\n");
     traverseStack(&stack);
+
+	int popped_value;
+    if (pop(&stack, &popped_value)) {
+        printf("Popped value: %d\n", popped_value);
+    }
 
     pop(&stack);
 
@@ -32,6 +35,12 @@ int main() {
         printf("Top element: %d\n", topElement->data);
     }
 
+    while (!isEmpty(&stack)) {
+        pop(&stack, &popped_value);
+        printf("Cleaning: popped %d\n", popped_value);
+    }
+
+    destroyStack(&stack);
     return 0;
 }
 
