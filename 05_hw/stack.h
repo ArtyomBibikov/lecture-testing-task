@@ -22,7 +22,7 @@ void destroyStack(Stack* stack);
 
 bool push(Stack* stack, int data);
 
-bool pop(Stack* stack);
+bool pop(Stack* stack, int* value);
 
 Node* searchByValue(Stack* stack, int value);
 
