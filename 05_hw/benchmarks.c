@@ -1,51 +1,32 @@
-#include <iostream>
-#include <chrono>
-#include <iomanip>
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include "stack.h"
 
-
 #define SMALL_SIZE     100
 #define MEDIUM_SIZE    1000
 #define LARGE_SIZE     10000
 
-class Timer {
-private:
-    std::chrono::high_resolution_clock::time_point start_time;
-    std::chrono::high_resolution_clock::time_point end_time;
-    bool running;
+typedef struct {
+    clock_t start;
+    clock_t end;
+} Timer;
 
-public:
-    Timer() : running(false) {}
+static void timer_start(Timer* t) {
+    t->start = clock();
+}
 
-    void start() {
-        start_time = std::chrono::high_resolution_clock::now();
-        running = true;
-    }
+static void timer_stop(Timer* t) {
+    t->end = clock();
+}
 
-    void stop() {
-        end_time = std::chrono::high_resolution_clock::now();
-        running = false;
-    }
+static double timer_elapsed_ms(Timer* t) {
+    return ((double)(t->end - t->start) / CLOCKS_PER_SEC) * 1000.0;
+}
 
-    double elapsed_ms() const {
-        auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start_time);
-        return duration.count() / 1000.0;
-    }
-
-    int64_t elapsed_us() const {
-        auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
-        return std::chrono::duration_cast<std::chrono::microseconds>(end - start_time).count();
-    }
-
-    int64_t elapsed_ns() const {
-        auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
-        return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start_time).count();
-    }
-};
+static double timer_elapsed_us(Timer* t) {
+    return ((double)(t->end - t->start) / CLOCKS_PER_SEC) * 1000000.0;
+}
 
 void benchmark_push_single() {
     printf("\n=== Benchmark: Single Push ===\n");
@@ -54,18 +35,17 @@ void benchmark_push_single() {
     initStack(&s);
 
     Timer timer;
-	timer.start()
+    timer_start(&timer);
 
     if (!push(&s, 42)) {
         fprintf(stderr, "Push failed!\n");
         return;
     }
 
-    timer.stop()
-	double timer_ms = timer.elapsed_ms()
+    timer_stop(&timer);
 
     printf("Operation: push single element\n");
-    printf("Time taken to complete benchmark: %.5f seconds\n", timer_ms);
+    printf("Time: %.3f microseconds\n", timer_elapsed_us(&timer));
     printf("Result: %s\n", (s.top != NULL && s.top->data == 42) ? "OK" : "FAIL");
 
     destroyStack(&s);
@@ -77,6 +57,8 @@ void benchmark_push_multiple(int num_elements) {
     Stack s;
     initStack(&s);
 
+    Timer timer;
+    timer_start(&timer);
 
     for (int i = 0; i < num_elements; i++) {
         if (!push(&s, i)) {
@@ -86,7 +68,14 @@ void benchmark_push_multiple(int num_elements) {
         }
     }
 
+    timer_stop(&timer);
+
+    double total_time_ms = timer_elapsed_ms(&timer);
+    double avg_time_us = (total_time_ms * 1000.0) / num_elements;
+
     printf("Total elements: %d\n", num_elements);
+    printf("Total time: %.3f ms\n", total_time_ms);
+    printf("Average time per push: %.3f µs\n", avg_time_us);
 
     int count = 0;
     Node* current = s.top;
@@ -107,6 +96,9 @@ void benchmark_pop_single() {
     initStack(&s);
     push(&s, 42);
 
+    Timer timer;
+    timer_start(&timer);
+
     int value;
     if (!pop(&s, &value)) {
         fprintf(stderr, "Pop failed!\n");
@@ -114,8 +106,10 @@ void benchmark_pop_single() {
         return;
     }
 
+    timer_stop(&timer);
 
     printf("Operation: pop single element\n");
+    printf("Time: %.3f microseconds\n", timer_elapsed_us(&timer));
     printf("Popped value: %d (expected: 42)\n", value);
     printf("Stack empty after pop: %s\n", isEmpty(&s) ? "YES" : "NO");
 
@@ -130,6 +124,9 @@ void benchmark_pop_multiple(int num_elements) {
     for (int i = 0; i < num_elements; i++) {
         push(&s, i);
     }
+
+    Timer timer;
+    timer_start(&timer);
 
     int value;
     int successful_pops = 0;
@@ -147,8 +144,15 @@ void benchmark_pop_multiple(int num_elements) {
         }
     }
 
+    timer_stop(&timer);
+
+    double total_time_ms = timer_elapsed_ms(&timer);
+    double avg_time_us = (total_time_ms * 1000.0) / successful_pops;
+
     printf("Attempted pops: %d\n", num_elements);
     printf("Successful pops: %d\n", successful_pops);
+    printf("Total time: %.3f ms\n", total_time_ms);
+    printf("Average time per pop: %.3f µs\n", avg_time_us);
     printf("Stack empty after all pops: %s\n", isEmpty(&s) ? "YES" : "NO");
 
     destroyStack(&s);
@@ -159,6 +163,9 @@ void benchmark_push_pop_alternating(int num_operations) {
 
     Stack s;
     initStack(&s);
+
+    Timer timer;
+    timer_start(&timer);
 
     int value;
     int push_count = 0;
@@ -176,10 +183,17 @@ void benchmark_push_pop_alternating(int num_operations) {
             }
         }
     }
-	
+
+    timer_stop(&timer);
+
+    double total_time_ms = timer_elapsed_ms(&timer);
+    double avg_time_us = (total_time_ms * 1000.0) / num_operations;
+
     printf("Total operations: %d\n", num_operations);
     printf("  Push operations: %d\n", push_count);
     printf("  Pop operations: %d\n", pop_count);
+    printf("Total time: %.3f ms\n", total_time_ms);
+    printf("Average time per operation: %.3f µs\n", avg_time_us);
 	
     int remaining = 0;
     while (!isEmpty(&s)) {
@@ -198,6 +212,9 @@ void benchmark_push_pop_sequence(int sequence_size, int repetitions) {
     Stack s;
     initStack(&s);
 
+    Timer timer;
+    timer_start(&timer);
+
     int value;
     int total_operations = 0;
 
@@ -213,19 +230,31 @@ void benchmark_push_pop_sequence(int sequence_size, int repetitions) {
         }
     }
 
+    timer_stop(&timer);
+
+    double total_time_ms = timer_elapsed_ms(&timer);
+    double avg_time_us = (total_time_ms * 1000.0) / total_operations;
+
     printf("Sequence size: %d\n", sequence_size);
     printf("Repetitions: %d\n", repetitions);
     printf("Total operations: %d\n", total_operations);
+    printf("Total time: %.3f ms\n", total_time_ms);
+    printf("Average time per operation: %.3f µs\n", avg_time_us);
     printf("Stack empty at end: %s\n", isEmpty(&s) ? "YES" : "NO");
 
     destroyStack(&s);
 }
+
+// БЕНЧМАРКИ ДЛЯ ГРАНИЧНЫХ СЛУЧАЕВ
 
 void benchmark_empty_stack_operations() {
     printf("\n=== Benchmark: Empty Stack Operations ===\n");
 
     Stack s;
     initStack(&s);
+
+    Timer timer;
+    timer_start(&timer);
 
     int value;
     int iterations = 1000000;
@@ -237,9 +266,17 @@ void benchmark_empty_stack_operations() {
         }
     }
 
+    timer_stop(&timer);
+
+    double total_time_ms = timer_elapsed_ms(&timer);
+    double avg_time_us = (total_time_ms * 1000.0) / iterations;
+
     printf("Operations: pop from empty stack\n");
     printf("Iterations: %d\n", iterations);
     printf("Failed pops (expected): %d\n", failed_pops);
+    printf("Total time: %.3f ms\n", total_time_ms);
+    printf("Average time per operation: %.3f µs\n", avg_time_us);
+
     destroyStack(&s);
 }
 
@@ -255,6 +292,9 @@ void benchmark_small_stacks() {
         Stack s;
         initStack(&s);
 
+        Timer timer;
+        timer_start(&timer);
+
         for (int j = 0; j < size; j++) {
             push(&s, j);
         }
@@ -263,6 +303,14 @@ void benchmark_small_stacks() {
         for (int j = 0; j < size; j++) {
             pop(&s, &value);
         }
+
+        timer_stop(&timer);
+
+        double total_time_us = timer_elapsed_us(&timer);
+        double avg_time_us = total_time_us / (2 * size);
+
+        printf("Size: %3d elements | Total: %7.2f µs | Avg: %6.3f µs/op\n",
+            size, total_time_us, avg_time_us);
 
         destroyStack(&s);
     }
