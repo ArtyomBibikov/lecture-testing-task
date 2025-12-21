@@ -1,7 +1,11 @@
+#include <iostream>
+#include <chrono>
+#include <iomanip>
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include "stack.h"
+
 
 #define SMALL_SIZE     100
 #define MEDIUM_SIZE    1000
