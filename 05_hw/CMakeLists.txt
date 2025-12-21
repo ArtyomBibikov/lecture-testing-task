@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(stack)
 
+option(ENABLE_SANITIZERS ON)
+option(ENABLE_ANALYZER ON)
+
 add_library(stack stack.c)
 
 add_executable(main main.c)
