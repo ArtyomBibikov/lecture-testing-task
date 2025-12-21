@@ -36,6 +36,9 @@ void benchmark_push_multiple(int num_elements) {
     Stack s;
     initStack(&s);
 
+	clock_t start = clock();
+
+
     for (int i = 0; i < num_elements; i++) {
         if (!push(&s, i)) {
             fprintf(stderr, "Push failed at iteration %d\n", i);
@@ -52,6 +55,9 @@ void benchmark_push_multiple(int num_elements) {
         count++;
         current = current->next;
     }
+	clock_t end = clock();
+	float benchmark_time = (float)(end - start) / CLOCKS_PER_SEC;
+    printf("Time taken to complete benchmark: %.5f seconds\n", benchmark_time);
     printf("Actual elements in stack: %d\n", count);
     printf("Verification: %s\n", (count == num_elements) ? "PASS" : "FAIL");
 
