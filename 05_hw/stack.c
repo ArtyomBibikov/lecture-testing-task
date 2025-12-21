@@ -35,7 +35,7 @@ void destroyStack(Stack* stack) {
 
 bool push(Stack* stack, int data) {
     Node* newNode = createNode(data);
-	if (!newNode) return false
+	if (!newNode) return false;
     newNode->next = stack->top;
     stack->top = newNode;
 	return true;
@@ -47,8 +47,11 @@ bool pop(Stack* stack, int* value) {
         return false;
     }
     Node* temp = stack->top;
-    stack->top = stack->top->next;
+    *value = temp->data;
+    stack->top = temp->next;
     free(temp);
+
+    return true;
 }
 
 Node* searchByValue(Stack* stack, int value) {
