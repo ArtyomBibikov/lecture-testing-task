@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include "stack.h"
 
-#define SMALL_SIZE     100
-#define MEDIUM_SIZE    1000
-#define LARGE_SIZE     10000
+#define SMALL_SIZE     10000
+#define MEDIUM_SIZE    100000
+#define LARGE_SIZE     1000000
 
 typedef struct {
     clock_t start;
