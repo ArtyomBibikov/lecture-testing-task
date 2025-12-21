@@ -6,8 +6,9 @@
 
 Node* createNode(int data) {
     Node* newNode = (Node*)malloc(sizeof(Node));
-    if (!newNode) {
-        fprintf(stderr, "Ошибка выделения памяти\n");
+    if (newNode == NULL) {
+        exit(EXIT_FAILURE);
+		printf("Cannot create a null node.\n")
         return NULL;
     }
     newNode->data = data;
@@ -45,6 +46,7 @@ bool push(Stack* stack, int data) {
 
 bool pop(Stack* stack, int* value) {
     if (!stack || !stack->top || !value) {
+		printf("Cannot pop an empty stack.\n")
         return false;
     }
 
@@ -64,7 +66,7 @@ Node* searchByValue(Stack* stack, int value) {
         if (current->data == value) {
             return current;
         }
-        current = current->next;
+	current = current->next;
     }
     return NULL;
 }
