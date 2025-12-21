@@ -161,19 +161,19 @@ void benchmark_pop_multiple(int num_elements) {
 int main() {
     printf("Starting benchmarks...\n\n");
     benchmark_push_single();
-	printf("\n\n")
+	printf("\n\n");
     benchmark_pop_single();
-	printf("\n\n")
+	printf("\n\n");
     benchmark_push_multiple(SMALL_SIZE);
-	printf("\n\n")
+	printf("\n\n");
     benchmark_pop_multiple(SMALL_SIZE);
-	printf("\n\n")
+	printf("\n\n");
     benchmark_push_multiple(MEDIUM_SIZE);
-	printf("\n\n")
+	printf("\n\n");
     benchmark_pop_multiple(MEDIUM_SIZE);
-	printf("\n\n")
+	printf("\n\n");
     benchmark_push_multiple(LARGE_SIZE);
-	printf("\n\n")
+	printf("\n\n");
     benchmark_pop_multiple(LARGE_SIZE);
     return 0;
 }
