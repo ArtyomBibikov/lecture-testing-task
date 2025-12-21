@@ -7,24 +7,61 @@
 #define MEDIUM_SIZE    1000
 #define LARGE_SIZE     10000
 
+class Timer {
+private:
+    std::chrono::high_resolution_clock::time_point start_time;
+    std::chrono::high_resolution_clock::time_point end_time;
+    bool running;
+
+public:
+    Timer() : running(false) {}
+
+    void start() {
+        start_time = std::chrono::high_resolution_clock::now();
+        running = true;
+    }
+
+    void stop() {
+        end_time = std::chrono::high_resolution_clock::now();
+        running = false;
+    }
+
+    double elapsed_ms() const {
+        auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start_time);
+        return duration.count() / 1000.0;
+    }
+
+    int64_t elapsed_us() const {
+        auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
+        return std::chrono::duration_cast<std::chrono::microseconds>(end - start_time).count();
+    }
+
+    int64_t elapsed_ns() const {
+        auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start_time).count();
+    }
+};
+
 void benchmark_push_single() {
     printf("\n=== Benchmark: Single Push ===\n");
 
     Stack s;
     initStack(&s);
 
-    clock_t start = clock();
+    Timer timer;
+	timer.start()
 
     if (!push(&s, 42)) {
         fprintf(stderr, "Push failed!\n");
         return;
     }
 
-    clock_t end = clock();
-	float benchmark_time = (float)(end - start) / CLOCKS_PER_SEC;
+    timer.stop()
+	double timer_ms = timer.elapsed_ms()
 
     printf("Operation: push single element\n");
-    printf("Time taken to complete benchmark: %.5f seconds\n", benchmark_time);
+    printf("Time taken to complete benchmark: %.5f seconds\n", timer_ms);
     printf("Result: %s\n", (s.top != NULL && s.top->data == 42) ? "OK" : "FAIL");
 
     destroyStack(&s);
@@ -35,8 +72,6 @@ void benchmark_push_multiple(int num_elements) {
 
     Stack s;
     initStack(&s);
-
-	clock_t start = clock();
 
 
     for (int i = 0; i < num_elements; i++) {
@@ -55,9 +90,6 @@ void benchmark_push_multiple(int num_elements) {
         count++;
         current = current->next;
     }
-	clock_t end = clock();
-	float benchmark_time = (float)(end - start) / CLOCKS_PER_SEC;
-    printf("Time taken to complete benchmark: %.5f seconds\n", benchmark_time);
     printf("Actual elements in stack: %d\n", count);
     printf("Verification: %s\n", (count == num_elements) ? "PASS" : "FAIL");
 
